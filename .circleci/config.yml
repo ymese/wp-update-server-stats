@@ -7,6 +7,11 @@ jobs:
     working_directory: ~/wp-update-server-stats
     steps:
       - checkout
+      - run:
+          name: Install depedencies
+          command: |
+            apt install -y php5-sqlite
+
       - restore_cache:
           keys:
             - vendor-cache-{{ checksum "composer.json" }}
