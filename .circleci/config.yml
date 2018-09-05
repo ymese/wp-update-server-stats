@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: preventdirectaccess/pda-ci:0.0.1
+
+    working_directory: ~/wp-update-server-stats
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - vendor-cache-{{ checksum "composer.json" }}
+            - vendor-cache
+      - build:
+          name: Build composer packages
+          command: |
+            cd ~/wp-update-server-stats
+            composer install
+      - save_cache:
+          key: vendor-cache-{{ checksum "composer.json" }}
+          paths:
+            - vendor
+            - components
+      - deploy:
+          name: Deploy wp-update-server-stats
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              echo "Deploying to server"
+              cd ~/wp-update-server-stats
+              rm -r .git
+              rsync -atv -e "ssh -o StrictHostKeyChecking=no" . $SERVER
+            else
+              echo "Err! Not master branch."
+            fi
+
+
