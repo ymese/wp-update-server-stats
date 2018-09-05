@@ -11,7 +11,7 @@ jobs:
           keys:
             - vendor-cache-{{ checksum "composer.json" }}
             - vendor-cache
-      - build:
+      - run:
           name: Build composer packages
           command: |
             cd ~/wp-update-server-stats
@@ -32,5 +32,7 @@ jobs:
             else
               echo "Err! Not master branch."
             fi
+
+
 
 
